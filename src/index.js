@@ -8,8 +8,8 @@ import { createMarkup } from './js/markup';
 import { renderMarkup } from './js/markup';
 
 let page = 1;
-const perPage = 8;
-let query = '';
+const perPage = 20;
+//let query = '';
 
 //refs.buttonLoadMoreEl.classList.add('is-hidden');
 
@@ -73,21 +73,21 @@ async function handlerSearchImages(event) {
   event.preventDefault();
   refs.galleryEl.innerHTML = '';
   //  clearMarkup(refs.galleryEl, refs.buttonLoadMoreEl);
-  query = event.currentTarget.elements.searchQuery.value.trim().toLowerCase();
+  let query = event.currentTarget.elements.searchQuery.value
+    .trim()
+    .toLowerCase();
   if (!query || query === ' ') {
     hideLoader();
     return Notiflix.Notify.info(`Sorry, write your request`);
     // hideLoader();
     // refs.buttonLoadMoreEl.classList.remove('is-hidden');
   }
-  page = 1;
+  let page = 1;
   showLoader();
   const response = await fetchImages(query, page, perPage)
     .then(images => {
+      console.log(images);
       renderMarkup(images.hits);
-      // const images = response.data.hits;
-      // totalHits = response.data.totalHits;
-      //console.log(response);
 
       images.totalHits > 0 && images.hits.length > 0
         ? Notiflix.Notify.success(
@@ -98,7 +98,7 @@ async function handlerSearchImages(event) {
           );
 
       if (images.totalHits > perPage && images.hits.length > 0) {
-        refs.buttonLoadMoreEl.classList.remove('is-hidden');
+        showLoader();
       }
       instance.refresh();
     })
@@ -114,56 +114,73 @@ function clearMarkup(gallery) {
   refs.buttonLoadMoreEl.classList.add('is-hidden');
 }
 
-// async function loadMore() {
-//   page += 1;
-//   let query = refs.formEl.elements.searchQuery.value.trim().toLowerCase();
-//   const firstChild = refs.galleryEl.firstElementChild;
-//   if (!firstChild) {
-//     return;
-//   }
-//   await fetchImages(query, page, perPage).then(images => {
-//     refs.galleryEl.insertAdjacentHTML('beforeend', createMarkup(images.hits));
-//     instance.refresh();
-
-//     if (images.hits.length * page >= images.totalHits) {
-//       //if (images.totalHits - page * perPage <= 0) {
-//       hideLoader();
-//     }
-//   });
-// }
-
 async function loadMore() {
   page += 1;
-  let query = refs.formEl.elements.searchQuery.value.trim().toLowerCase();
+  // let query = refs.formEl.elements.searchQuery.value.trim().toLowerCase();
+  const response = await fetchImages(query, page, perPage);
+  let showPage = response.totalHits / perPage;
 
-  try {
-    const response = await fetchImages(query, page, perPage);
-    let showPage = response.data.hits.length * page;
-
-    if (showPage >= response.data.totalHits) {
-      hideLoader();
-      Notiflix.Notify.info(
-        "We're sorry, but you've reached the end of search results."
-      );
-    }
-    renderMarkup(response.data.hits);
-  } catch (error) {
-    Notiflix.Notify.failure(
-      'Sorry, there are no images matching your search query. Please try again.'
+  if (showPage <= page) {
+    hideLoader();
+    Notiflix.Notify.info(
+      "We're sorry, but you've reached the end of search results."
     );
   }
-  instance.refresh();
+  await fetchImages(query, page, perPage).then(images => {
+    console.log(images);
+    //renderMarkup(images.hits);
+    //instance.refresh();
+  });
 }
 
 // async function loadMore() {
 //   page += 1;
 //   let query = refs.formEl.elements.searchQuery.value.trim().toLowerCase();
-//   let firstChild = refs.galleryEl.firstElementChild;
-//   if () {}
-// }
 
+//   const response = await fetchImages(query, page, perPage)
+//     //let showPage = response.data.totalHits / perPage;
+//     .then(images => {
+//       console.log(images);
+//     });
+//   if (showPage <= page) {
+//     hideLoader();
+//     Notiflix.Notify.info(
+//       "We're sorry, but you've reached the end of search results."
+//     );
+//   }
+//   renderMarkup(response.data.hits);
+// } catch (error) {
+//   Notiflix.Notify.failure(
+//     'Sorry, there are no images matching your search query. Please try again.'
+//   );
+// }
+// instance.refresh();
+//}
+
+// async function loadMore() {
+//   page += 1;
+//   let query = refs.formEl.elements.searchQuery.value.trim().toLowerCase();
+
+//   try {
+//     const response = await fetchImages(query, page, perPage);
+//     let showPage = response.data.totalHits / perPage;
+
+//     if (showPage <= page) {
+//       hideLoader();
+//       Notiflix.Notify.info(
+//         "We're sorry, but you've reached the end of search results."
+//       );
+//     }
+//     renderMarkup(response.data.hits);
+//   } catch (error) {
+//     Notiflix.Notify.failure(
+//       'Sorry, there are no images matching your search query. Please try again.'
+//     );
+//   }
+//   instance.refresh();
+// }
 function renderMarkup(images) {
   refs.galleryEl.insertAdjacentHTML('beforeend', createMarkup(images));
 }
 
-console.log('HELLO');
+console.log('HELLO world');
