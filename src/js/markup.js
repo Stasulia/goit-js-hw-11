@@ -39,6 +39,6 @@ export function createMarkup(galleryItems) {
     .join('');
 }
 
-export function renderMarkup(images) {
-  refs.galleryEl.insertAdjacentHTML('beforeend', createMarkup(images));
-}
+// export function renderMarkup(images) {
+//   refs.galleryEl.insertAdjacentHTML('beforeend', createMarkup(images));
+// }

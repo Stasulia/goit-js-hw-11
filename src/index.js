@@ -5,7 +5,6 @@ import 'simplelightbox/dist/simple-lightbox.min.css';
 import { refs } from './js/refs';
 import { fetchImages } from './js/api';
 import { createMarkup } from './js/markup';
-import { renderMarkup } from './js/markup';
 
 let page = 1;
 const perPage = 40;
@@ -68,6 +67,10 @@ async function handlerSearchImages(event) {
     .finally(hideLoader());
 }
 
+function renderMarkup(images) {
+  refs.galleryEl.insertAdjacentHTML('beforeend', createMarkup(images));
+}
+
 function clearMarkup(gallery) {
   refs.galleryEl.innerHTML = ' ';
 }
@@ -90,8 +93,4 @@ async function loadMore() {
     renderMarkup(images.hits);
     instance.refresh();
   });
-}
-
-function renderMarkup(images) {
-  refs.galleryEl.insertAdjacentHTML('beforeend', createMarkup(images));
 }
