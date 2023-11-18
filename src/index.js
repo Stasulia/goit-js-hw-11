@@ -9,7 +9,6 @@ import { renderMarkup } from './js/markup';
 
 let page = 1;
 const perPage = 40;
-//let query = '';
 
 function showLoader(loader) {
   refs.buttonLoadMoreEl.classList.remove('is-hidden');
@@ -29,15 +28,12 @@ const instance = new SimpleLightbox('.gallery a', {
 async function handlerSearchImages(event) {
   event.preventDefault();
   refs.galleryEl.innerHTML = '';
-  //  clearMarkup(refs.galleryEl, refs.buttonLoadMoreEl);
   let query = event.currentTarget.elements.searchQuery.value
     .trim()
     .toLowerCase();
   if (!query || query === ' ') {
     hideLoader();
     return Notiflix.Notify.info(`Sorry, write your request`);
-    // hideLoader();
-    // refs.buttonLoadMoreEl.classList.remove('is-hidden');
   }
   let page = 1;
   showLoader();
@@ -99,5 +95,3 @@ async function loadMore() {
 function renderMarkup(images) {
   refs.galleryEl.insertAdjacentHTML('beforeend', createMarkup(images));
 }
-
-console.log('Соня коза');
