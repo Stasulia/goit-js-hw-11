@@ -26,7 +26,8 @@ const instance = new SimpleLightbox('.gallery a', {
 
 async function handlerSearchImages(event) {
   event.preventDefault();
-  refs.galleryEl.innerHTML = '';
+  // refs.galleryEl.innerHTML = '';
+  clearMarkup();
   let query = event.currentTarget.elements.searchQuery.value
     .trim()
     .toLowerCase();
@@ -73,24 +74,48 @@ function renderMarkup(images) {
 
 function clearMarkup(gallery) {
   refs.galleryEl.innerHTML = ' ';
+  page = 1;
+  hideLoader();
 }
 
 async function loadMore() {
   page += 1;
   let query = refs.formEl.elements.searchQuery.value.trim().toLowerCase();
-  const response = await fetchImages(query, page, perPage);
-  let showPage = response.totalHits / perPage;
+  try {
+    const response = await fetchImages(query, page);
+    let showPage = response.totalHits / perPage;
 
-  if (showPage <= page) {
-    hideLoader();
-    refs.formEl.reset(),
+    if (showPage <= page) {
+      hideLoader();
       Notiflix.Notify.info(
         "We're sorry, but you've reached the end of search results."
       );
+    }
+    renderMarkup(response.hits);
+  } catch (error) {
+    Notiflix.Notify.failure(
+      'Sorry, there are no images matching your search query. Please try again.'
+    );
   }
-  await fetchImages(query, page, perPage).then(images => {
-    console.log(images.hits);
-    renderMarkup(images.hits);
-    instance.refresh();
-  });
+  instance.refresh();
 }
+
+// async function loadMore() {
+//   page += 1;
+//   let query = refs.formEl.elements.searchQuery.value.trim().toLowerCase();
+//   const response = await fetchImages(query, page, perPage);
+//   let showPage = response.totalHits / perPage;
+
+//   if (showPage <= page) {
+//     hideLoader();
+//     refs.formEl.reset(),
+//       Notiflix.Notify.info(
+//         "We're sorry, but you've reached the end of search results."
+//       );
+//   }
+//   await fetchImages(query, page, perPage).then(images => {
+//     console.log(images.hits);
+//     renderMarkup(images.hits);
+//     instance.refresh();
+//   });
+// }
